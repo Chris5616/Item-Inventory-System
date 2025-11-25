@@ -23,11 +23,10 @@
                             {{ __('Profile Image') }}
                         </h3>
 
-                      @foreach($suppliers as $supplier)
-                        <img src="{{ $supplier->image ? asset('storage/suppliers/'
-                         . $supplier->image) : asset('assets/img/demo/user-placeholder.svg') }}"
-                            id="image-preview">
-                        @endforeach
+                       <img src="{{ $supplier->image
+        ? asset('storage/suppliers/' . $supplier->image)
+        : asset('assets/img/demo/user-placeholder.svg') }}"
+        alt="Supplier Image" width="200">
                     </div>
                 </div>
             </div>

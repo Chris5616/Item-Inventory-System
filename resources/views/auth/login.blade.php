@@ -35,7 +35,7 @@
                 @enderror
             </div>
 
-            <!-- Remember Me -->
+            {{-- <!-- Remember Me -->
             <div class="mb-3">
                 <label for="remember" class="form-check">
                     <input type="checkbox"
@@ -45,7 +45,7 @@
                            {{ old('remember') ? 'checked' : '' }}/>
                     <span class="form-check-label">Remember me on this device</span>
                 </label>
-            </div>
+            </div> --}}
 
             <!-- Submit -->
             <div class="form-footer">

@@ -23,27 +23,25 @@ class SupplierController extends Controller
 
     public function store(StoreSupplierRequest $request)
     {
-        $supplier = Supplier::create($request->except('image'));
+       $data = $request->except('image');
 
-    if ($request->hasFile('image')) {
-        $file = $request->file('image');
-        $filename = hexdec(uniqid()).'.'.$file->getClientOriginalExtension();
-        $file->storeAs('suppliers', $filename, 'public');
+if ($request->hasFile('image')) {
+    $file = $request->file('image');
+    $filename = hexdec(uniqid()) . '.' . $file->getClientOriginalExtension();
+    $file->storeAs('suppliers', $filename, 'public');
+    $data['image'] = $filename;
+}
 
-        $supplier->update(['image' => $filename]);
+Supplier::create($data);
+
+return redirect()->route('suppliers.index')
+    ->with('success', 'New supplier has been created!');
     }
 
-    return redirect()
-        ->route('suppliers.index')
-        ->with('success', 'New supplier has been created!');
-    }
-
-    public function show(Supplier $supplier)
-    {
-          $suppliers = Supplier::all();
-
-        return view('suppliers.show', compact('suppliers'));
-    }
+ public function show(Supplier $supplier)
+{
+    return view('suppliers.show', compact('supplier'));
+}
 
     public function edit(Supplier $supplier)
     {

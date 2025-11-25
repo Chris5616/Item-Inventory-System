@@ -102,7 +102,7 @@
                 <div class="col-sm-6 col-md-6">
                     <div class="mb-3">
                         <label for="tax" class="form-label">Tax <span class="text-danger">*</span></label>
-                        <input type="number" name="quantity" id="tax"
+                        <input type="number" name="tax" id="tax"
                                class="form-control @error('tax') is-invalid @enderror"
                                value="{{ old('tax', $product->tax) }}" required>
                         @error('tax') <div class="invalid-feedback">{{ $message }}</div> @enderror

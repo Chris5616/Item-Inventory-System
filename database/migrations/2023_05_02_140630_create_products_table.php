@@ -19,6 +19,7 @@ return new class extends Migration
             //$table->string('product_barcode_symbology')->nullable();
             $table->integer('quantity');
           $table->foreignId('supplier_id')->constrained()->nullable();
+             $table->foreignId('category_id')->constrained()->nullable();
             $table->integer('buying_price')->comment('Buying Price');
             $table->integer('selling_price')->comment('Selling Price');
             $table->integer('quantity_alert');
@@ -26,13 +27,6 @@ return new class extends Migration
             $table->tinyInteger('tax_type')->nullable();
             $table->text('notes')->nullable();
             $table->string('product_image')->nullable();
-            $table->foreignIdFor(\App\Models\Category::class)
-                ->nullable()
-                ->constrained()
-//                ->restrictOnDelete();
-//                ->cascadeOnDelete();
-                ->nullOnDelete();
-
             $table->foreignIdFor(\App\Models\Unit::class)->constrained()
                 ->cascadeOnDelete();
             $table->timestamps();

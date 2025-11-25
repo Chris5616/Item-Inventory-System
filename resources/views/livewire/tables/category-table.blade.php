@@ -71,7 +71,7 @@
                             {{ $category->slug }}
                         </td>
                         <td class="align-middle text-center" style="width: 10%">
-                            <x-button.show class="btn-icon" route="{{ route('categories.show', $category) }}"/>
+                            {{-- <x-button.show class="btn-icon" route="{{ route('categories.show', $category) }}"/> --}}
                             <x-button.edit class="btn-icon" route="{{ route('categories.edit', $category) }}"/>
                             <x-button.delete class="btn-icon" route="{{ route('categories.destroy', $category) }}"/>
                         </td>

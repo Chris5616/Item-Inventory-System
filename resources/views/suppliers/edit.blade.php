@@ -39,7 +39,7 @@
                                 <!-- Profile picture help block -->
                                 <div class="small font-italic text-muted mb-2">JPG or PNG no larger than 1 MB</div>
                                 <!-- Profile picture input -->
-                                <input class="form-control form-control-solid mb-2 @error('photo') is-invalid @enderror" type="file"  id="image" name="photo" accept="image/*" onchange="previewImage();">
+                                <input class="form-control form-control-solid mb-2 @error('image') is-invalid @enderror" type="file"  id="image" name="image" accept="image/*" onchange="previewImage();">
                                 @error('photo')
                                 <div class="invalid-feedback">
                                     {{ $message }}

@@ -40,15 +40,20 @@ class StoreProductRequest extends FormRequest
     }
 
     protected function prepareForValidation(): void
-    {
-        $this->merge([
-            'slug' => Str::slug($this->name, '-'),
-            'code' => IdGenerator::generate([
-                'table' => 'products',
-                'field' => 'code',
-                'length' => 4,
-                'prefix' => 'PC'
-            ])
-        ]);
-    }
+{
+    $this->merge([
+        'slug' => Str::slug($this->name, '-'),
+        'code' => $this->generateProductCode()
+    ]);
+}
+
+protected function generateProductCode(): string
+{
+    // Get the last product ID (works in SQLite & MySQL)
+    $lastId = \App\Models\Product::max('id') ?? 0;
+
+    // Pad with zeros to length 4 and add prefix
+    return 'PC' . str_pad($lastId + 1, 4, '0', STR_PAD_LEFT);
+}
+
 }

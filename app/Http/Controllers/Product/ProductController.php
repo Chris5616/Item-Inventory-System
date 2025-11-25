@@ -46,22 +46,12 @@ class ProductController extends Controller
         }
 
         try {
-            $product = Product::create($request->except('product_image'));
+            // Create product with adjusted quantity_alert
+            $product = Product::create($this->prepareProductData($request));
 
             // Handle image upload
             if ($request->hasFile('product_image')) {
-                $file = $request->file('product_image');
-                $filename = hexdec(uniqid()) . '.' . $file->getClientOriginalExtension();
-
-                if ($file->isValid()) {
-                    $file->storeAs('products', $filename, 'public');
-
-                    $product->update([
-                        'product_image' => $filename
-                    ]);
-                } else {
-                    return back()->withErrors(['product_image' => 'Invalid image file']);
-                }
+                $this->uploadProductImage($request->file('product_image'), $product);
             }
 
             return redirect()
@@ -72,16 +62,6 @@ class ProductController extends Controller
             Log::error('Product creation failed: ' . $e->getMessage());
             return back()->withErrors(['error' => 'Something went wrong while creating the product']);
         }
-    }
-
-    // Helper method to generate a unique product code
-    private function generateUniqueCode()
-    {
-        do {
-            $code = 'PC' . strtoupper(uniqid());
-        } while (Product::where('code', $code)->exists());
-
-        return $code;
     }
 
     public function show(Product $product)
@@ -107,27 +87,37 @@ class ProductController extends Controller
 
     public function update(UpdateProductRequest $request, Product $product)
     {
-        $product->update($request->except('product_image'));
+       try {
+        // Get input quantity from form
+        $quantity = $request->get('quantity');
 
+        // Deduct input quantity from existing quantity_alert
+        $product->quantity_alert = max($product->quantity_alert - $quantity, 0);
+
+        // Update other fields except product_image and quantity_alert
+        $product->update($request->except('product_image', 'quantity_alert'));
+
+        // Save adjusted quantity_alert
+        $product->save();
+
+        // Handle product image if uploaded
         if ($request->hasFile('product_image')) {
             // Delete old image if exists
             if ($product->product_image && Storage::disk('public')->exists('products/' . $product->product_image)) {
                 Storage::disk('public')->delete('products/' . $product->product_image);
             }
 
-            // Upload new image
-            $file = $request->file('product_image');
-            $fileName = hexdec(uniqid()) . '.' . $file->getClientOriginalExtension();
-            $file->storeAs('products', $fileName, 'public');
-
-            $product->update([
-                'product_image' => $fileName
-            ]);
+            $this->uploadProductImage($request->file('product_image'), $product);
         }
 
         return redirect()
             ->route('products.index')
             ->with('success', 'Product has been updated!');
+
+    } catch (\Exception $e) {
+        Log::error('Product update failed: ' . $e->getMessage());
+        return back()->withErrors(['error' => 'Something went wrong while updating the product']);
+    }
     }
 
     public function destroy(Product $product)
@@ -141,5 +131,48 @@ class ProductController extends Controller
         return redirect()
             ->route('products.index')
             ->with('success', 'Product has been deleted!');
+    }
+
+    /**
+     * Prepare product data including adjusted quantity_alert
+     */
+    private function prepareProductData($request)
+    {
+        $quantity = $request->get('quantity');
+        $quantityAlert = $request->get('quantity_alert');
+
+        $adjustedQuantityAlert = max($quantityAlert - $quantity, 0);
+
+        return array_merge(
+            $request->except('product_image', 'quantity_alert'),
+            ['quantity_alert' => $adjustedQuantityAlert]
+        );
+    }
+
+    /**
+     * Upload product image and update the product
+     */
+    private function uploadProductImage($file, Product $product)
+    {
+        if ($file->isValid()) {
+            $filename = hexdec(uniqid()) . '.' . $file->getClientOriginalExtension();
+            $file->storeAs('products', $filename, 'public');
+
+            $product->update([
+                'product_image' => $filename
+            ]);
+        }
+    }
+
+    /**
+     * Generate unique product code
+     */
+    private function generateUniqueCode()
+    {
+        do {
+            $code = strtoupper(uniqid('PRD-'));
+        } while (Product::where('code', $code)->exists());
+
+        return $code;
     }
 }
