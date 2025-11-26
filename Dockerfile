@@ -16,6 +16,7 @@ RUN apt-get update && apt-get upgrade -y \
     && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
     && docker-php-ext-install pdo_mysql mbstring gd xml zip intl
 
+RUN chmod -R 775 bootstrap/cache storage
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 COPY . .
 RUN composer install --no-interaction
