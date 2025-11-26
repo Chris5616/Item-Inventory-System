@@ -20,10 +20,12 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Bootstrap any application services.
      */
-    public function boot()
+    public function boot(): void
     {
-        if (env('APP_ENV') == 'production') {
-            $this->app['request']->server->set('HTTPS', true);
-        }
+        Paginator::useBootstrapFive();
+
+        Request::macro('breadcrumbs', function (){
+            return new Breadcrumbs($this);
+        });
     }
 }
